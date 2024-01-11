@@ -5,19 +5,19 @@
 приведены на скриншотах ниже
 
 ## Add Task
-![](/Screens/Add Task.png "Add Task")
+![](/Screens/Change%20Task.png)
 
 ## Change Task
-![](/Screens/Change Task.png "Change Task")
+![](/Screens/Change%20Task.png)
 
 ## Create User
-![](/Screens/Create User.png "Create User")
+![](/Screens/Create%20User.png)
 
 ## Delete Task
-![](/Screens/Delete Task.png "Delete Task")
+![](/Screens/Delete%20Task.png)
 
 ## Get Task User
-![](/Screens/Get Task User.png "Get Task User")
+![](/Screens/Get%20Task%20User.png)
 
 ## Get Tasks undef User
-![](/Screens/Get Tasks undef User.png "Get Tasks undef User")
+![](/Screens/Get%20Tasks%20undef%20User.png)
