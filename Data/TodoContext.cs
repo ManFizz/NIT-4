@@ -1,8 +1,12 @@
-﻿namespace ToDo_RestAPI.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToDo_RestAPI.Models;
+
+namespace ToDo_RestAPI.Data;
 
 using Microsoft.EntityFrameworkCore;
 
-public sealed class TodoDbContext : DbContext
+[SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
+public class TodoDbContext : DbContext
 {
     
     public TodoDbContext(DbContextOptions<TodoDbContext> options)
