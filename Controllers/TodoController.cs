@@ -22,6 +22,7 @@ public class TodoController(TodoDbContext db) : Controller
     }
 
     // POST /todo
+    [Authorize]
     [HttpPost("/todo")]
     public IActionResult AddTodo([FromBody] Todo todo)
     {
@@ -36,6 +37,7 @@ public class TodoController(TodoDbContext db) : Controller
     }
 
     // DELETE /todo/{id}
+    [Authorize]
     [HttpDelete("/todo/{id:int}")]
     public IActionResult DeleteTodo(int id)
     {
@@ -50,6 +52,7 @@ public class TodoController(TodoDbContext db) : Controller
     }
 
     // PUT /todo/{id}
+    [Authorize]
     [HttpPut("/todo/{id:int}")]
     public IActionResult UpdateTodo(int id, [FromBody] Todo updatedTodo)
     {
