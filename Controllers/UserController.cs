@@ -8,7 +8,7 @@ namespace ToDo_RestAPI.Controllers;
 public class UserController(TodoDbContext db) : Controller
 {
     // POST /user
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [HttpPost("/user")]
     public IActionResult AddUser([FromBody] User? user)
     {

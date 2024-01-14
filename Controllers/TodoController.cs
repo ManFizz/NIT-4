@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToDo_RestAPI.Data;
 using ToDo_RestAPI.Models;
@@ -8,7 +9,7 @@ namespace ToDo_RestAPI.Controllers;
 public class TodoController(TodoDbContext db) : Controller
 {
     // GET /todo
-    [Authorize]
+    [Authorize(Roles = "uma_authorization")]
     [HttpGet("/todo")]
     public IActionResult GetTodos([FromQuery] int userId)
     {

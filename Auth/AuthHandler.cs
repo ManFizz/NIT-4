@@ -5,6 +5,8 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 #pragma warning disable CS0618 // Type or member is obsolete
 
 namespace ToDo_RestAPI.Auth;
@@ -38,13 +40,28 @@ public class AuthHandler : AuthenticationHandler<AuthOptions>
         var userInfo = await IsValidKeyCloakToken(token);
         if(userInfo == null)
             return AuthenticateResult.Fail("Invalid token by keycloak.");
-        
-        var roles = jsonToken.Claims
-            .Where(c => c.Type == "realm_access")
-            .SelectMany(c => c.Value.Split(" ", StringSplitOptions.RemoveEmptyEntries))
-            .ToList();
 
-        if (roles.Count == 0)
+        List<string?>? roles = [];
+        var realmAccessClaim = jsonToken.Claims.FirstOrDefault(c => c.Type == "realm_access");
+
+        if (realmAccessClaim != null)
+        {
+            var rolesJson = realmAccessClaim.Value;
+
+            var rolesObject = JsonConvert.DeserializeObject<JObject>(rolesJson);
+
+            roles = rolesObject?["roles"]?.Values<string>().ToList();
+
+            if (roles != null)
+            {
+                foreach (var role in roles)
+                {
+                    Console.WriteLine(role);
+                }
+            }
+        }
+        
+        if (roles is { Count: 0 })
         {
             return AuthenticateResult.Fail("No roles found in token");
         }
@@ -54,8 +71,8 @@ public class AuthHandler : AuthenticationHandler<AuthOptions>
             new("FirstName", userInfo.preferred_username),
         };
 
-        foreach (var role in roles) 
-            claims.Add(new Claim(ClaimTypes.Role, role));
+        foreach (var role in roles!) 
+            claims.Add(new Claim(ClaimTypes.Role, role!));
 
         var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
