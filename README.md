@@ -1,23 +1,44 @@
-﻿1. Установлен Nginx
-2. Установлен .NET Framework для поддержки моего ASP.NET
-3. Написан код для 3-ех моделей и 1 контроллера REST API
-4. Проведены тесты при помощи Insomnia которые содержатся в экспортированном файле Insomnia.json. Результаты тестов
-приведены на скриншотах ниже
+﻿# Реализация авторизации через Keycloak в REST API
+## Описание
+Этот проект расширяет функциональность предыдущей лабораторной работы 
+по созданию REST API, добавляя механизм авторизации через Keycloak. 
+Для этого был создан класс AuthHandler, который 
+обрабатывает и проверяет JWT токены, полученные от сервера Keycloak.
+
+## Функционал
+- Проверка наличия заголовка Authorization в запросе.
+- Извлечение значения токена из заголовка.
+- Получение списка прав из кэша или запрос к Keycloak для получения информации о пользователе.
+- Разбор токена и проверка списка прав.
+- Добавлены декораторы, атрибуты и аналогичные средства 
+в ASP.NET для ограничения запросов с заголовками POST, PUT, DELETE 
+только от авторизованных пользователей с указанной ролью.
 
 ## Add Task
-![](/Screens/Change%20Task.png)
+![](/Screens/Add_task.png)
+## Add Task (No access)
+![](/Screens/Add_task_no_access.png)
 
 ## Change Task
-![](/Screens/Change%20Task.png)
+![](/Screens/Change_task.png)
+## Change Task (No access)
+![](/Screens/Change_task_no_access.png)
 
 ## Create User
-![](/Screens/Create%20User.png)
+![](/Screens/Add_user.png)
+## Create User (No access)
+![](/Screens/Add_user_no_access.png)
 
 ## Delete Task
-![](/Screens/Delete%20Task.png)
+![](/Screens/Delete_task.png)
+## Delete Task (No access)
+![](/Screens/Delete_task_no_access.png)
 
 ## Get Task User
-![](/Screens/Get%20Task%20User.png)
+![](/Screens/Get_list_tasks_by_user_id.png)
+## Get Task User (No access)
+![](/Screens/Get_list_tasks_by_user_no_access.png)
 
-## Get Tasks undef User
-![](/Screens/Get%20Tasks%20undef%20User.png)
+## Request to keycloak for get token
+![](/Screens/Request_keycloak_for_get_token.png)
+
