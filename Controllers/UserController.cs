@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ToDo_RestAPI.Data;
 using ToDo_RestAPI.Models;
 
@@ -7,6 +8,7 @@ namespace ToDo_RestAPI.Controllers;
 public class UserController(TodoDbContext db) : Controller
 {
     // POST /user
+    [Authorize(Roles = "admin")]
     [HttpPost("/user")]
     public IActionResult AddUser([FromBody] User? user)
     {

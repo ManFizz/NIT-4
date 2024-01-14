@@ -1,33 +1,79 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using ToDo_RestAPI.Auth;
 using ToDo_RestAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configuration = builder.Configuration;
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+services.AddAuthorization();
+services.AddAuthentication(AuthOptions.DefaultScheme)
+    .AddScheme<AuthOptions, AuthHandler>
+    (AuthOptions.DefaultScheme, options => { })
+    .AddJwtBearer();
 
-builder.Services.AddDbContext<TodoDbContext>(options =>
+services.AddControllersWithViews();
+
+services.AddSwaggerGen(options =>
 {
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme.",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
+
+services.AddDbContext<TodoDbContext>(options =>
+{
+    options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+});
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseDefaultFiles();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseAuthorization();
+app.Map("/data", [Authorize] () => new { message= "Hello World!" });
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 
+app.UseAuthorization();
 app.UseRouting();
 
 app.UseAuthorization();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

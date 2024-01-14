@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ToDo_RestAPI.Data;
 using ToDo_RestAPI.Models;
 
@@ -7,6 +9,7 @@ namespace ToDo_RestAPI.Controllers;
 public class TodoController(TodoDbContext db) : Controller
 {
     // GET /todo
+    [Authorize(Roles = "uma_authorization")]
     [HttpGet("/todo")]
     public IActionResult GetTodos([FromQuery] int userId)
     {
@@ -20,6 +23,7 @@ public class TodoController(TodoDbContext db) : Controller
     }
 
     // POST /todo
+    [Authorize]
     [HttpPost("/todo")]
     public IActionResult AddTodo([FromBody] Todo todo)
     {
@@ -34,6 +38,7 @@ public class TodoController(TodoDbContext db) : Controller
     }
 
     // DELETE /todo/{id}
+    [Authorize]
     [HttpDelete("/todo/{id:int}")]
     public IActionResult DeleteTodo(int id)
     {
@@ -48,6 +53,7 @@ public class TodoController(TodoDbContext db) : Controller
     }
 
     // PUT /todo/{id}
+    [Authorize]
     [HttpPut("/todo/{id:int}")]
     public IActionResult UpdateTodo(int id, [FromBody] Todo updatedTodo)
     {
