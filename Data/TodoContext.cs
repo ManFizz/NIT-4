@@ -22,4 +22,8 @@ public class TodoDbContext : DbContext
 
     public required DbSet<User> Users { get; set; }
     public required DbSet<Todo> Todos { get; set; }
+    public DbSet<TaskLabel> TaskLabels { get; set; }
+    public DbSet<Models.TaskStatus> TaskStatuses { get; set; }
+    public DbSet<TaskGroup> TaskGroups { get; set; }
+    public DbSet<UserAction> UserActions { get; set; }
 }
