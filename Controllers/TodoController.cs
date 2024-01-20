@@ -1,69 +1,88 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ToDo_RestAPI.Data;
 using ToDo_RestAPI.Models;
 
 namespace ToDo_RestAPI.Controllers;
 
+[Route("api/todos")]
+[ApiController]
 public class TodoController(TodoDbContext db) : Controller
 {
-    // GET /todo
-    [Authorize(Roles = "uma_authorization")]
-    [HttpGet("/todo")]
-    public IActionResult GetTodos([FromQuery] int userId)
+    // GET: api/todos
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Todo>>> GetTodos()
     {
-        var user = db.Users.FirstOrDefault(u => u.Id == userId);
-        if (user == null)
-            return NotFound($"User with ID {userId} not found");
-
-        var userTodos = db.Todos.Where(t => t.UserId == userId).ToList();
-        
-        return Ok(userTodos);
+        return await db.Todos.ToListAsync();
     }
 
-    // POST /todo
-    [Authorize]
-    [HttpPost("/todo")]
-    public IActionResult AddTodo([FromBody] Todo todo)
+    // GET: api/todos/5
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<Todo>> GetTodoById(int id)
     {
-        var user = db.Users.FirstOrDefault(u => u.Id == todo.UserId);
-        if (user == null)
-            return NotFound($"User with ID {todo.UserId} not found");
+        var todo = await db.Todos.FindAsync(id);
 
-        db.Todos.Add(todo);
-        db.SaveChanges();
-
-        return Ok(todo);
-    }
-
-    // DELETE /todo/{id}
-    [Authorize]
-    [HttpDelete("/todo/{id:int}")]
-    public IActionResult DeleteTodo(int id)
-    {
-        var todo = db.Todos.FirstOrDefault(t => t.Id == id);
         if (todo == null)
-            return NotFound($"Todo with ID {id} not found");
+        {
+            return NotFound();
+        }
+
+        return todo;
+    }
+
+    // POST: api/todos
+    [HttpPost]
+    public async Task<ActionResult<Todo>> CreateTodo(Todo todo)
+    {
+        db.Todos.Add(todo);
+        await db.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetTodoById), new { id = todo.Id }, todo);
+    }
+
+    // PUT: api/todos/5
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateTodo(int id, Todo todo)
+    {
+        if (id != todo.Id)
+        {
+            return BadRequest();
+        }
+
+        db.Entry(todo).State = EntityState.Modified;
+
+        try
+        {
+            await db.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!db.Todos.Any(e => e.Id == id))
+            {
+                return NotFound();
+            }
+
+            throw;
+        }
+
+        return NoContent();
+    }
+
+    // DELETE: api/todos/5
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteTodo(int id)
+    {
+        var todo = await db.Todos.FindAsync(id);
+        if (todo == null)
+        {
+            return NotFound();
+        }
 
         db.Todos.Remove(todo);
-        db.SaveChanges();
-        
-        return Ok(todo);
-    }
+        await db.SaveChangesAsync();
 
-    // PUT /todo/{id}
-    [Authorize]
-    [HttpPut("/todo/{id:int}")]
-    public IActionResult UpdateTodo(int id, [FromBody] Todo updatedTodo)
-    {
-        var todo = db.Todos.FirstOrDefault(t => t.Id == id);
-        if (todo == null)
-            return NotFound($"Todo with ID {id} not found");
-
-        todo.Task = updatedTodo.Task;
-        db.SaveChanges();
-        
-        return Ok(todo);
+        return NoContent();
     }
 }
